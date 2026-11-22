@@ -1,0 +1,233 @@
+{% extends 'students/base.html' %}
+
+{% block title %}
+Оценки — ElectiveHub
+{% endblock %}
+
+
+{% block content %}
+
+<section class="container page-section">
+
+    <div class="page-header page-header-row">
+
+        <div>
+            <span class="section-label">
+                Результаты обучения
+            </span>
+
+            <h1>Оценки</h1>
+
+            <p>
+                По окончании семестра в базу заносится оценка за экзамен.
+                Итоговой оценкой за предмет считается последняя
+                полученная оценка.
+            </p>
+        </div>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'grade_create' %}" class="btn btn-primary">
+                + Выставить оценку
+            </a>
+        {% endif %}
+
+    </div>
+
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-label">
+                Итог
+            </span>
+
+            <h2>Итоговые оценки по предметам</h2>
+        </div>
+
+    </div>
+
+
+    {% if rows %}
+
+        <div class="card">
+
+            <div class="table-wrapper">
+
+                <table class="grades-table">
+
+                    <thead>
+                        <tr>
+                            <th>Студент</th>
+                            <th>Группа</th>
+                            <th>Факультатив</th>
+                            <th>Объём</th>
+                            <th>Итоговая оценка</th>
+                            <th>Дата последнего экзамена</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for row in rows %}
+
+                            <tr>
+                                <td>
+                                    <a href="{% url 'student_detail' row.student.pk %}">
+                                        <strong>{{ row.student.short_name }}</strong>
+                                    </a>
+                                </td>
+
+                                <td>{{ row.student.group }}</td>
+
+                                <td>
+                                    <a href="{% url 'elective_detail' row.elective.pk %}">
+                                        {{ row.elective.name }}
+                                    </a>
+                                </td>
+
+                                <td>{{ row.elective.total_hours }} ч.</td>
+
+                                <td>
+                                    {% if row.final %}
+                                        <span class="grade grade-{{ row.final.grade }}">
+                                            {{ row.final.grade }}
+                                        </span>
+                                        <span class="muted">
+                                            {{ row.final.get_grade_display }}
+                                        </span>
+                                    {% else %}
+                                        <span class="muted">не выставлена</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if row.final %}
+                                        {{ row.final.exam_date|date:"d.m.Y" }}
+                                    {% else %}
+                                        <span class="muted">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <h3>Записей на факультативы нет</h3>
+            <p>
+                Сначала запишите студентов на факультативы,
+                затем выставляйте оценки за экзамены.
+            </p>
+        </div>
+
+    {% endif %}
+
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-label">
+                Журнал
+            </span>
+
+            <h2>История экзаменов</h2>
+
+            <p class="section-note">
+                Показаны все внесённые оценки, включая пересдачи:
+                итоговой становится последняя по дате экзамена.
+            </p>
+        </div>
+
+    </div>
+
+
+    {% if grades %}
+
+        <div class="card">
+
+            <div class="table-wrapper">
+
+                <table class="grades-table">
+
+                    <thead>
+                        <tr>
+                            <th>Дата экзамена</th>
+                            <th>Студент</th>
+                            <th>Факультатив</th>
+                            <th>Учебный год</th>
+                            <th>Семестр</th>
+                            <th>Оценка</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for grade in grades %}
+
+                            <tr>
+                                <td>{{ grade.exam_date|date:"d.m.Y" }}</td>
+
+                                <td>
+                                    <a href="{% url 'student_detail' grade.student.pk %}">
+                                        {{ grade.student.short_name }}
+                                    </a>
+                                </td>
+
+                                <td>{{ grade.elective.name }}</td>
+
+                                <td>
+                                    {{ grade.elective_semester.academic_year }}
+                                </td>
+
+                                <td>
+                                    {{ grade.elective_semester.semester_number }}
+                                </td>
+
+                                <td>
+                                    <span class="grade grade-{{ grade.grade }}">
+                                        {{ grade.grade }}
+                                    </span>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">📋</div>
+
+            <h2>Оценок пока нет</h2>
+
+            <p>
+                В системе ещё не зарегистрировано ни одной оценки.
+                {% if not user.is_authenticated %}
+                    Войдите в систему, чтобы выставить оценку.
+                {% endif %}
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

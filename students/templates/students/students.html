@@ -1,0 +1,172 @@
+{% extends 'students/base.html' %}
+
+{% block title %}
+Студенты — ElectiveHub
+{% endblock %}
+
+
+{% block content %}
+
+<section class="container page-section">
+
+    <div class="page-header page-header-row">
+
+        <div>
+            <span class="section-label">
+                Учебная база
+            </span>
+
+            <h1>Студенты</h1>
+
+            <p>
+                Анкетные данные студентов, группы и прогресс
+                по минимальному объёму факультативных часов.
+            </p>
+        </div>
+
+        <a href="{% url 'student_create' %}" class="btn btn-primary">
+            + Добавить студента
+        </a>
+
+    </div>
+
+
+    <form method="get" class="filter-bar">
+
+        <input
+            type="text"
+            name="q"
+            id="studentSearch"
+            value="{{ query }}"
+            placeholder="🔎 Поиск по фамилии, имени, группе или телефону..."
+        >
+
+        <select name="group" aria-label="Группа">
+
+            <option value="">Все группы</option>
+
+            {% for item in groups %}
+                <option value="{{ item }}"
+                        {% if item == group %}selected{% endif %}>
+                    {{ item }}
+                </option>
+            {% endfor %}
+
+        </select>
+
+        <button type="submit" class="btn btn-primary">
+            Найти
+        </button>
+
+        {% if query or group %}
+            <a href="{% url 'students' %}" class="filter-reset">
+                Сбросить
+            </a>
+        {% endif %}
+
+    </form>
+
+
+    <p class="result-count">
+        Найдено студентов: {{ rows|length }}
+    </p>
+
+
+    <div class="student-grid" id="studentsGrid">
+
+        {% for row in rows %}
+
+            <a href="{% url 'student_detail' row.student.pk %}"
+               class="student-card"
+               data-name="{{ row.student.full_name }}"
+               data-group="{{ row.student.group }}"
+               data-phone="{{ row.student.phone }}">
+
+                <div class="avatar">
+                    {{ row.student.first_name|first }}
+                </div>
+
+                <div class="student-info">
+
+                    <h3>
+                        {{ row.student.last_name }}
+                        {{ row.student.first_name }}
+                    </h3>
+
+                    <p>
+                        {{ row.student.patronymic|default:"—" }}
+                    </p>
+
+                    <div class="student-meta">
+
+                        <span>
+                            Группа: {{ row.student.group }}
+                        </span>
+
+                        <span>
+                            {{ row.student.phone }}
+                        </span>
+
+                        <span>
+                            {{ row.student.address }}
+                        </span>
+
+                    </div>
+
+                    <div class="student-progress">
+
+                        <div class="progress-line">
+
+                            <div class="progress-line-fill"
+                                 style="width: {{ row.progress.percent }}%"></div>
+
+                        </div>
+
+                        <div class="student-progress-info">
+
+                            <span>
+                                {{ row.progress.credited_hours }} /
+                                {{ row.progress.required_hours }} ч.
+                            </span>
+
+                            <span class="status {{ row.progress.status_css }}">
+                                {% if row.progress.is_met %}
+                                    минимум выполнен
+                                {% else %}
+                                    не хватает {{ row.progress.shortfall_hours }} ч.
+                                {% endif %}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        {% empty %}
+
+            <div class="empty-state">
+
+                <h3>Студенты не найдены</h3>
+
+                <p>
+                    {% if query or group %}
+                        Попробуйте изменить условия поиска
+                        или сбросить фильтры.
+                    {% else %}
+                        Добавьте первого студента через форму
+                        «Добавить студента» или административную панель.
+                    {% endif %}
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}

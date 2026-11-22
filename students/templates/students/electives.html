@@ -1,0 +1,165 @@
+{% extends 'students/base.html' %}
+
+{% block title %}
+Факультативы — ElectiveHub
+{% endblock %}
+
+
+{% block content %}
+
+<section class="container page-section">
+
+    <div class="page-header">
+
+        <span class="section-label">
+            Учебные дисциплины
+        </span>
+
+        <h1>Факультативы</h1>
+
+        <p>
+            Преподаватели кафедры ведут факультативные занятия.
+            Для каждого предмета задан объём лекций, практик
+            и лабораторных работ по семестрам.
+        </p>
+
+    </div>
+
+
+    <form method="get" class="filter-bar">
+
+        <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            placeholder="🔎 Поиск по названию, описанию или преподавателю..."
+        >
+
+        <button type="submit" class="btn btn-primary">
+            Найти
+        </button>
+
+        {% if query %}
+            <a href="{% url 'electives' %}" class="filter-reset">
+                Сбросить
+            </a>
+        {% endif %}
+
+    </form>
+
+
+    <div class="elective-grid">
+
+        {% for elective in electives %}
+
+            <div class="elective-card">
+
+                <div class="elective-top">
+
+                    <div class="elective-icon">
+                        📚
+                    </div>
+
+                    {% if elective.is_active %}
+                        <span class="active-badge">Набор открыт</span>
+                    {% else %}
+                        <span class="active-badge closed">Набор закрыт</span>
+                    {% endif %}
+
+                </div>
+
+
+                <h2>
+                    {{ elective.name }}
+                </h2>
+
+
+                <p class="elective-teacher">
+                    {% if elective.teacher %}
+                        {{ elective.teacher.short_name }}
+                        <span class="muted">
+                            · {{ elective.teacher.position|default:"преподаватель" }}
+                        </span>
+                    {% else %}
+                        <span class="muted">Преподаватель не назначен</span>
+                    {% endif %}
+                </p>
+
+
+                <p class="elective-description">
+                    {{ elective.description|truncatechars:150 }}
+                </p>
+
+
+                <div class="hours">
+
+                    <span>
+                        Лекции / практика / лабораторные
+                    </span>
+
+                </div>
+
+                <div class="hours-values">
+                    <span>{{ elective.hours_by_type.lectures }} ч.</span>
+                    <span>{{ elective.hours_by_type.practice }} ч.</span>
+                    <span>{{ elective.hours_by_type.laboratory }} ч.</span>
+                </div>
+
+
+                <div class="hours">
+
+                    <span>
+                        Семестров: {{ elective.duration_semesters }}
+                    </span>
+
+                    <span>
+                        Студентов: {{ elective.students_count }}
+                    </span>
+
+                </div>
+
+
+                <div class="hours">
+
+                    <span>
+                        Общий объём
+                    </span>
+
+                    <strong>
+                        {{ elective.total_hours }} ч.
+                    </strong>
+
+                </div>
+
+
+                <a href="{% url 'elective_detail' elective.pk %}"
+                   class="btn btn-primary full-button">
+                    Подробнее
+                </a>
+
+            </div>
+
+        {% empty %}
+
+            <div class="empty-state">
+
+                <h3>Факультативы не найдены</h3>
+
+                <p>
+                    {% if query %}
+                        Попробуйте изменить запрос или
+                        <a href="{% url 'electives' %}">сбросить поиск</a>.
+                    {% else %}
+                        Добавьте факультатив через административную панель.
+                    {% endif %}
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}

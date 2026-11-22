@@ -1,0 +1,369 @@
+{% extends 'students/base.html' %}
+
+{% block title %}
+{{ elective.name }} — ElectiveHub
+{% endblock %}
+
+
+{% block content %}
+
+<section class="container page-section">
+
+    <a href="{% url 'electives' %}" class="back-link">
+        ← Все факультативы
+    </a>
+
+
+    <div class="detail-card">
+
+        <div class="profile-head">
+
+            <div class="avatar avatar-large">📚</div>
+
+            <div class="profile-title">
+
+                <span class="section-label">Факультатив</span>
+
+                <h1>{{ elective.name }}</h1>
+
+                <p>
+                    {% if elective.teacher %}
+                        {{ elective.teacher.full_name }}
+                        {% if elective.teacher.position %}
+                            — {{ elective.teacher.position }}
+                        {% endif %}
+                    {% else %}
+                        Преподаватель не назначен
+                    {% endif %}
+                </p>
+
+            </div>
+
+            {% if elective.is_active %}
+                <span class="status success">Набор открыт</span>
+            {% else %}
+                <span class="status warning">Набор закрыт</span>
+            {% endif %}
+
+        </div>
+
+
+        {% if elective.description %}
+
+            <div class="description-block">
+
+                <p id="electiveDescription"
+                   class="elective-description folded">
+                    {{ elective.description|linebreaksbr }}
+                </p>
+
+                <button type="button"
+                        class="fold-button"
+                        data-fold-target="electiveDescription">
+                    Показать полностью
+                </button>
+
+            </div>
+
+        {% endif %}
+
+
+        <div class="meta-grid">
+
+            <div class="meta-item">
+                <span>Общий объём</span>
+                <strong>{{ elective.total_hours }} ч.</strong>
+            </div>
+
+            <div class="meta-item">
+                <span>Семестров</span>
+                <strong>{{ elective.duration_semesters }}</strong>
+            </div>
+
+            <div class="meta-item">
+                <span>Студентов записано</span>
+                <strong>{{ rows|length }}</strong>
+            </div>
+
+            <div class="meta-item">
+                <span>Лекции</span>
+                <strong>{{ elective.hours_by_type.lectures }} ч.</strong>
+            </div>
+
+            <div class="meta-item">
+                <span>Практика</span>
+                <strong>{{ elective.hours_by_type.practice }} ч.</strong>
+            </div>
+
+            <div class="meta-item">
+                <span>Лабораторные</span>
+                <strong>{{ elective.hours_by_type.laboratory }} ч.</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-label">
+                Учебный процесс
+            </span>
+
+            <h2>
+                Учебный план по семестрам
+            </h2>
+
+            <p class="section-note">
+                В каждом семестре для предмета устанавливается объём
+                лекций, практик и лабораторных работ в часах.
+            </p>
+        </div>
+
+    </div>
+
+
+    {% if elective.semesters_list %}
+
+        <div class="card">
+
+            <div class="table-wrapper">
+
+                <table class="grades-table">
+
+                    <thead>
+                        <tr>
+                            <th>Учебный год</th>
+                            <th>Семестр</th>
+                            <th>Лекции</th>
+                            <th>Практика</th>
+                            <th>Лабораторные</th>
+                            <th>Всего</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for semester in elective.semesters_list %}
+
+                            <tr>
+                                <td>{{ semester.academic_year }}</td>
+                                <td>{{ semester.get_semester_number_display }}</td>
+                                <td>{{ semester.lecture_hours }} ч.</td>
+                                <td>{{ semester.practice_hours }} ч.</td>
+                                <td>{{ semester.laboratory_hours }} ч.</td>
+                                <td>
+                                    <strong>{{ semester.total_hours }} ч.</strong>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <td colspan="2">
+                                <strong>Итого</strong>
+                            </td>
+                            <td>{{ elective.hours_by_type.lectures }} ч.</td>
+                            <td>{{ elective.hours_by_type.practice }} ч.</td>
+                            <td>{{ elective.hours_by_type.laboratory }} ч.</td>
+                            <td>
+                                <strong>{{ elective.total_hours }} ч.</strong>
+                            </td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <h3>Учебный план не задан</h3>
+            <p>
+                Добавьте семестры факультатива в административной панели,
+                чтобы задать объём лекций, практик и лабораторных работ.
+            </p>
+        </div>
+
+    {% endif %}
+
+
+    <div class="section-heading section-heading-row">
+
+        <div>
+            <span class="section-label">
+                Записанные студенты
+            </span>
+
+            <h2>
+                Кто изучает факультатив
+            </h2>
+        </div>
+
+    </div>
+
+
+    {% if rows %}
+
+        <div class="card">
+
+            <div class="table-wrapper">
+
+                <table class="grades-table">
+
+                    <thead>
+                        <tr>
+                            <th>Студент</th>
+                            <th>Группа</th>
+                            <th>Статус</th>
+                            <th>Итоговая оценка</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for row in rows %}
+
+                            <tr>
+                                <td>
+                                    <a href="{% url 'student_detail' row.student.pk %}">
+                                        <strong>{{ row.student.full_name }}</strong>
+                                    </a>
+                                </td>
+
+                                <td>{{ row.student.group }}</td>
+
+                                <td>
+                                    <span class="tag tag-{{ row.enrollment.status }}">
+                                        {{ row.enrollment.status_label }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {% if row.final %}
+                                        <span class="grade grade-{{ row.final.grade }}">
+                                            {{ row.final.grade }}
+                                        </span>
+                                        <span class="muted">
+                                            от {{ row.final.exam_date|date:"d.m.Y" }}
+                                        </span>
+                                    {% else %}
+                                        <span class="muted">не выставлена</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if user.is_authenticated %}
+                                        <form method="post"
+                                              action="{% url 'unenroll' %}"
+                                              class="inline-form"
+                                              data-confirm="Отменить запись студента «{{ row.student.short_name }}»?">
+                                            {% csrf_token %}
+
+                                            <input type="hidden"
+                                                   name="enrollment_id"
+                                                   value="{{ row.enrollment.pk }}">
+
+                                            <button type="submit"
+                                                    class="btn btn-small btn-danger">
+                                                Отменить
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="muted">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <h3>Пока никто не записан</h3>
+            <p>
+                Запишите студента на этот факультатив
+                с помощью формы ниже.
+            </p>
+        </div>
+
+    {% endif %}
+
+
+    <div class="form-card">
+
+        <h2>
+            Записать студента
+        </h2>
+
+        {% if user.is_authenticated %}
+
+            {% if available_students %}
+
+                <form method="post" action="{% url 'enroll' %}"
+                      class="inline-form">
+
+                    {% csrf_token %}
+
+                    <input type="hidden" name="elective_id"
+                           value="{{ elective.pk }}">
+
+                    <select name="student_id" required
+                            aria-label="Студент">
+                        <option value="">Выберите студента</option>
+
+                        {% for student in available_students %}
+                            <option value="{{ student.pk }}">
+                                {{ student.full_name }} ({{ student.group }})
+                            </option>
+                        {% endfor %}
+
+                    </select>
+
+                    <button type="submit" class="btn btn-primary">
+                        Записать на факультатив
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <p class="muted">
+                    Все студенты уже записаны на этот факультатив.
+                </p>
+
+            {% endif %}
+
+        {% else %}
+
+            <p class="muted">
+                Чтобы записывать студентов на факультативы,
+                <a href="{% url 'login' %}?next={% url 'elective_detail' elective.pk %}">
+                    войдите в систему
+                </a>.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

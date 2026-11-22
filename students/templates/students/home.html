@@ -1,0 +1,419 @@
+{% extends 'students/base.html' %}
+
+{% block title %}
+Главная — ElectiveHub
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="container hero-content">
+
+        <div class="hero-text">
+
+            <div class="badge">
+                ● Учебная система
+            </div>
+
+            <h1>
+                Факультативы<br>
+                <span>для студентов</span>
+            </h1>
+
+            <p>
+                Учёт анкетных данных студентов, учебных планов по семестрам,
+                записей на факультативы и экзаменационных оценок.
+                Итоговая оценка за предмет — последняя полученная оценка.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="{% url 'electives' %}" class="btn btn-primary">
+                    Смотреть факультативы
+                </a>
+
+                <a href="{% url 'requirements' %}" class="btn btn-secondary">
+                    Определение факультативов
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-card">
+
+            <div class="hero-card-top">
+                <span>Учебный план всех факультативов</span>
+                <span class="status success">
+                    {{ plan.total }} ч.
+                </span>
+            </div>
+
+            <h3>Виды занятий</h3>
+
+            <div class="progress-row">
+                <span>Лекции</span>
+                <strong>{{ plan.lectures }} ч.</strong>
+            </div>
+
+            <div class="progress">
+                <div class="progress-fill"
+                     style="width: {{ plan.lecture_width }}%"></div>
+            </div>
+
+            <div class="progress-row">
+                <span>Практика</span>
+                <strong>{{ plan.practice }} ч.</strong>
+            </div>
+
+            <div class="progress">
+                <div class="progress-fill second"
+                     style="width: {{ plan.practice_width }}%"></div>
+            </div>
+
+            <div class="progress-row">
+                <span>Лабораторные</span>
+                <strong>{{ plan.laboratory }} ч.</strong>
+            </div>
+
+            <div class="progress">
+                <div class="progress-fill third"
+                     style="width: {{ plan.laboratory_width }}%"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="container">
+
+    <div class="section-heading">
+
+        <span class="section-label">
+            Состояние базы
+        </span>
+
+        <h2>
+            Система в цифрах
+        </h2>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <span class="stat-value">{{ students_count }}</span>
+            <span class="stat-label">студентов</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">{{ electives_count }}</span>
+            <span class="stat-label">факультативов</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">{{ semesters_count }}</span>
+            <span class="stat-label">семестров в планах</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">{{ enrollments_count }}</span>
+            <span class="stat-label">записей на факультативы</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">{{ grades_count }}</span>
+            <span class="stat-label">оценок за экзамены</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-value">
+                {{ met_count }} / {{ students_count }}
+            </span>
+            <span class="stat-label">
+                выполнили минимум {{ required_hours }} ч.
+            </span>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="container">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-label">
+                Разделы
+            </span>
+
+            <h2>
+                Всё необходимое в одном месте
+            </h2>
+        </div>
+
+    </div>
+
+
+    <div class="cards">
+
+        <div class="feature-card">
+
+            <div class="feature-icon green">
+                👨‍🎓
+            </div>
+
+            <h3>Студенты</h3>
+
+            <p>
+                ФИО, группа, адрес и телефон.
+                Прогресс по минимальному объёму часов.
+            </p>
+
+            <a href="{% url 'students' %}">
+                Перейти →
+            </a>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon blue">
+                📚
+            </div>
+
+            <h3>Факультативы</h3>
+
+            <p>
+                Преподаватель, учебный план по семестрам:
+                лекции, практика и лабораторные работы.
+            </p>
+
+            <a href="{% url 'electives' %}">
+                Перейти →
+            </a>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon purple">
+                ⭐
+            </div>
+
+            <h3>Оценки</h3>
+
+            <p>
+                История экзаменов и итоговая оценка
+                по последнему результату.
+            </p>
+
+            <a href="{% url 'grades' %}">
+                Перейти →
+            </a>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon green">
+                🎯
+            </div>
+
+            <h3>Определение факультативов</h3>
+
+            <p>
+                Кто набрал минимум {{ required_hours }} часов,
+                а кому и какой факультатив стоит добрать.
+            </p>
+
+            <a href="{% url 'requirements' %}">
+                Перейти →
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="container">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-label">
+                Успеваемость
+            </span>
+
+            <h2>
+                Минимальный объём часов
+            </h2>
+        </div>
+
+        <p class="section-note">
+            Каждый студент обязан прослушать не менее
+            {{ required_hours }} часов факультативных занятий.
+        </p>
+
+    </div>
+
+
+    <div class="progress-grid">
+
+        {% for row in progress_rows %}
+
+            <a href="{% url 'student_detail' row.student.pk %}"
+               class="progress-card">
+
+                <div class="progress-card-head">
+
+                    <div>
+                        <strong>{{ row.student.short_name }}</strong>
+                        <span>{{ row.student.group }}</span>
+                    </div>
+
+                    <span class="status {{ row.progress.status_css }}">
+                        {{ row.progress.status_label }}
+                    </span>
+
+                </div>
+
+                <div class="progress-line">
+
+                    <div class="progress-line-fill"
+                         style="width: {{ row.progress.percent }}%"></div>
+
+                </div>
+
+                <div class="progress-card-foot">
+
+                    <span>
+                        {{ row.progress.credited_hours }} из
+                        {{ row.progress.required_hours }} ч.
+                    </span>
+
+                    <span>
+                        {% if row.progress.is_met %}
+                            минимум выполнен
+                        {% else %}
+                            не хватает {{ row.progress.shortfall_hours }} ч.
+                        {% endif %}
+                    </span>
+
+                </div>
+
+            </a>
+
+        {% empty %}
+
+            <div class="empty-state">
+                <h3>Студентов пока нет</h3>
+                <p>
+                    Добавьте студентов через административную панель
+                    или форму «Добавить студента».
+                </p>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section class="container">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-label">
+                Последние экзамены
+            </span>
+
+            <h2>
+                Свежие оценки
+            </h2>
+        </div>
+
+    </div>
+
+    {% if last_grades %}
+
+        <div class="card">
+
+            <div class="table-wrapper">
+
+                <table class="grades-table">
+
+                    <thead>
+                        <tr>
+                            <th>Студент</th>
+                            <th>Факультатив</th>
+                            <th>Семестр</th>
+                            <th>Оценка</th>
+                            <th>Дата</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for grade in last_grades %}
+
+                            <tr>
+                                <td>
+                                    <a href="{% url 'student_detail' grade.student.pk %}">
+                                        {{ grade.student.short_name }}
+                                    </a>
+                                </td>
+                                <td>{{ grade.elective.name }}</td>
+                                <td>
+                                    {{ grade.elective_semester.academic_year }},
+                                    {{ grade.elective_semester.semester_number }}
+                                </td>
+                                <td>
+                                    <span class="grade grade-{{ grade.grade }}">
+                                        {{ grade.grade }}
+                                    </span>
+                                </td>
+                                <td>{{ grade.exam_date|date:"d.m.Y" }}</td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <h3>Оценок пока нет</h3>
+            <p>
+                Оценки выставляются после экзаменов
+                в конце семестра.
+            </p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

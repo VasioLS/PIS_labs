@@ -1,0 +1,81 @@
+{% extends 'students/base.html' %}
+
+{% block title %}
+Добавить студента — ElectiveHub
+{% endblock %}
+
+
+{% block content %}
+
+<section class="container page-section">
+
+    <a href="{% url 'students' %}" class="back-link">
+        ← Все студенты
+    </a>
+
+
+    <div class="form-card">
+
+        <span class="section-label">Анкета</span>
+
+        <h1>Добавить студента</h1>
+
+        <p class="muted">
+            Заполните анкетные данные: ФИО, группу, адрес и телефон.
+        </p>
+
+
+        <form method="post" class="form-grid" novalidate>
+
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+
+                <div class="form-group {% if field.errors %}has-error{% endif %} {% if field.name == 'address' %}form-group-wide{% endif %}">
+
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}*{% endif %}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <span class="helptext">{{ field.help_text }}</span>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+            <div class="form-actions">
+
+                <button type="submit" class="btn btn-primary">
+                    Сохранить студента
+                </button>
+
+                <a href="{% url 'students' %}" class="btn btn-secondary">
+                    Отмена
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "students/base.html" %}
+
+{% block title %}
+Вход — ElectiveHub
+{% endblock %}
+
+
+{% block content %}
+
+<div class="auth-container">
+
+    <div class="auth-card">
+
+        <div class="auth-header">
+
+            <div class="auth-icon">🔐</div>
+
+            <h1>Вход в систему</h1>
+
+            <p>Введите логин и пароль, чтобы записывать студентов
+               на факультативы и выставлять оценки</p>
+
+        </div>
+
+        {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
+            <div class="form-group">
+
+                <label for="username">
+                    Логин
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Введите логин"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="password">
+                    Пароль
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Введите пароль"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary full-button"
+            >
+                Войти
+            </button>
+
+        </form>
+
+        <div class="auth-footer">
+
+            Нет аккаунта?
+
+            <a href="{% url 'register' %}">
+                Зарегистрироваться
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

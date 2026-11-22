@@ -1,0 +1,140 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Факультативы{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{% static 'students/css/style.css' %}">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="container navbar-inner">
+
+        <a href="{% url 'home' %}" class="logo">
+            <span class="logo-icon">✓</span>
+            <span>Elective<span>Hub</span></span>
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="{% url 'home' %}"
+               class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                Главная
+            </a>
+
+            <a href="{% url 'students' %}"
+               class="{% if request.resolver_match.url_name == 'students' or request.resolver_match.url_name == 'student_detail' or request.resolver_match.url_name == 'student_create' %}active{% endif %}">
+                Студенты
+            </a>
+
+            <a href="{% url 'electives' %}"
+               class="{% if request.resolver_match.url_name == 'electives' or request.resolver_match.url_name == 'elective_detail' %}active{% endif %}">
+                Факультативы
+            </a>
+
+            <a href="{% url 'grades' %}"
+               class="{% if request.resolver_match.url_name == 'grades' %}active{% endif %}">
+                Оценки
+            </a>
+
+            <a href="{% url 'requirements' %}"
+               class="{% if request.resolver_match.url_name == 'requirements' %}active{% endif %}">
+                Минимум часов
+            </a>
+
+        </nav>
+
+        <div class="auth-links">
+
+            {% if user.is_authenticated %}
+
+                <span class="auth-user">
+                    {{ user.username }}
+                </span>
+
+                <a href="{% url 'logout' %}" class="auth-link">
+                    Выйти
+                </a>
+
+            {% else %}
+
+                <a href="{% url 'login' %}" class="auth-link">
+                    Войти
+                </a>
+
+                <a href="{% url 'register' %}"
+                   class="auth-link auth-link-primary">
+                    Регистрация
+                </a>
+
+            {% endif %}
+
+        </div>
+
+        <a href="/admin/" class="admin-button">
+            Админ-панель
+        </a>
+
+    </div>
+
+</header>
+
+
+{% if messages %}
+
+    <div class="container messages">
+
+        {% for message in messages %}
+
+            <div class="flash flash-{{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+
+<footer class="footer">
+
+    <div class="container footer-inner">
+
+        <div>
+            <strong>ElectiveHub</strong>
+            <p>Система учёта факультативных занятий</p>
+        </div>
+
+        <div>
+            Python · Django · SQLite
+        </div>
+
+    </div>
+
+</footer>
+
+<script src="{% static 'js/helloworld.js' %}"></script>
+
+<script>
+    if (window.location.search.indexOf("shot=1") !== -1) {
+        document.body.style.minHeight = "0";
+    }
+</script>
+
+</body>
+</html>

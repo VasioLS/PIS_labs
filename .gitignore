@@ -1,0 +1,25 @@
+# Служебные файлы Python
+__pycache__/
+*.py[cod]
+
+# Виртуальное окружение
+venv/
+.venv/
+
+# База данных и журналы SQLite
+db.sqlite3
+db.sqlite3-journal
+db.sqlite3-wal
+db.sqlite3-shm
+
+# Статика, собранная collectstatic
+staticfiles/
+
+# Настройки редакторов
+.idea/
+.vscode/*
+!.vscode/settings.json
+
+# Отчёты и временные файлы
+*.log
+_acl_recovery/
